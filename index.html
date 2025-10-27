@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Les i Bibelen på nett</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <img src="lesbibele.jpg" alt="Bibelen toppbilde" class="hero-image" />
+    <h1>Les i Bibelen på nett</h1>
+  </header>
+
+  <main>
+    <div class="controls">
+      <label for="translation">Velg språk eller oversettelse:</label><br />
+      <select id="translation">
+        <optgroup label="Engelske oversettelser">
+          <option value="web">🇬🇧 World English Bible (WEB)</option>
+          <option value="kjv">🇬🇧 King James Version (KJV)</option>
+          <option value="bbe">🇬🇧 Bible in Basic English (BBE)</option>
+          <option value="ylt">🇬🇧 Young’s Literal Translation (YLT)</option>
+          <option value="asv">🇺🇸 American Standard Version (ASV)</option>
+        </optgroup>
+        <optgroup label="Skandinaviske språk">
+          <option value="nob">🇳🇴 Norsk (Bokmål – Bibel 2011)</option>
+          <option value="swe">🇸🇪 Svenska</option>
+          <option value="dan">🇩🇰 Dansk</option>
+        </optgroup>
+      </select>
+
+      <br /><br />
+
+      <label for="verse">Skriv inn bibelsted (f.eks. John 3:16 eller Salme 23:1):</label><br />
+      <input type="text" id="verse" placeholder="Skriv inn her..." />
+      <button id="getVerse">Hent vers</button>
+
+      <p class="info">
+        ℹ️ Appen bruker åpne bibel-API-er. Dersom et vers ikke finnes på valgt språk,
+        vises det automatisk på engelsk som reserve.
+      </p>
+    </div>
+
+    <div id="result"></div>
+  </main>
+
+  <footer>
+    <p>© 2025 BibelApp – Gratis bibellesning på flere språk</p>
+  </footer>
+
+  <script>
+    document.getElementById("getVerse").addEventListener("click", async () => {
+      const verseInput = document.getElementById("verse").value.trim();
+      const translation = document.getElementById("translation").value;
+      const result = document.getElementById("result");
+
+      if (!verseInput) {
+        result.innerHTML = "<p>⚠️ Skriv inn et bibelsted først.</p>";
+        return;
+      }
+
+      result.innerHTML = "⏳ Henter vers...";
+
+      let dataText = "";
+      let dataRef = "";
+      let source = "";
+
+      try {
+        // 1️⃣ Bolls.life for svensk, dansk og (noe) norsk
+        if (["nob", "swe", "dan"].includes(translation)) {
+          const bollsUrl = `https://bolls.life/get-bible?bible=${
+            translation === "nob"
+              ? "norwegian"
+              : translation === "swe"
+              ? "swedish"
+              : "danish"
+          }&passage=${encodeURIComponent(verseInput)}`;
+          const bollsRes = await fetch(bollsUrl);
+          const bollsData = await bollsRes.json();
+          if (bollsData.text) {
+            dataText = bollsData.text;
+            dataRef = verseInput;
+            source = "Skandinavisk (Bolls.life)";
+          }
+        }
+
+        // 2️⃣ API.Bible via Netlify proxy for norsk Bibel 2011
+        if (!dataText && translation === "nob") {
+          const apiBibleKey = "51658bcd81eabe502071d3f9b2d28780"; // din nøkkel
+          const bibleId = "06125adad2d5898a-01"; // Bibelen 2011 Bokmål
+          const apiUrl = `/api/bibles/${bibleId}/search?query=${encodeURIComponent(
+            verseInput
+          )}`;
+          const apiRes = await fetch(apiUrl, {
+            headers: { "api-key": apiBibleKey },
+          });
+          const apiData = await apiRes.json();
+
+          if (
+            apiData.data &&
+            apiData.data.passages &&
+            apiData.data.passages.length > 0
+          ) {
+            dataText = apiData.data.passages[0].content;
+            dataRef = apiData.data.passages[0].reference;
+            source = "Norsk (API.Bible – Bibel 2011)";
+          }
+        }
+
+        // 3️⃣ Bible-API fallback (engelsk)
+        if (!dataText) {
+          const bibleApiUrl = `https://bible-api.com/${encodeURIComponent(
+            verseInput
+          )}?translation=${translation}`;
+          const bibleRes = await fetch(bibleApiUrl);
+          const bibleData = await bibleRes.json();
+          if (bibleData.text) {
+            dataText = bibleData.text.replace(/\n/g, "<br>");
+            dataRef = bibleData.reference;
+            source = "English (fallback)";
+          }
+        }
+
+        // 4️⃣ Vis resultat
+        if (dataText) {
+          result.innerHTML = `<h3>${dataRef}</h3><p>${dataText}</p><small><i>${source}</i></small>`;
+        } else {
+          result.innerHTML =
+            "<p>⚠️ Fant ikke verset på valgt språk. Prøv et annet.</p>";
+        }
+      } catch (err) {
+        result.innerHTML = `<p>🚨 Feil: ${err.message}</p><p>Hvis du kjører denne siden lokalt, må du bruke Netlify-proxy (se netlify.toml).</p>`;
+      }
+    });
+  </script>
+</body>
+</html>

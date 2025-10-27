@@ -1,0 +1,154 @@
+/* === GENERELT === */
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  margin: 0;
+  background-color: #f6f7fb;
+  color: #222;
+  text-align: center;
+  font-size: 18px; /* 📏 Økt grunnstørrelse */
+  line-height: 1.7;
+}
+
+/* === TOPPBILDE === */
+header {
+  position: relative;
+  text-align: center;
+  color: white;
+  overflow: hidden;
+}
+
+.hero-image {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  filter: brightness(65%);
+}
+
+header h1 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2.8rem; /* 📏 Litt større tittel */
+  background-color: rgba(0, 0, 0, 0.45);
+  padding: 14px 28px;
+  border-radius: 12px;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+}
+
+/* === HOVEDINNHOLD === */
+main {
+  margin: 45px auto;
+  width: 90%;
+  max-width: 650px;
+  background: white;
+  border-radius: 14px;
+  padding: 30px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+}
+
+.controls {
+  margin-bottom: 25px;
+}
+
+/* === SKJEMA-ELEMENTER === */
+label {
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+select,
+input,
+button {
+  font-size: 1.1rem; /* 📏 større tekst i feltene */
+  padding: 12px 14px;
+  margin: 7px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: auto;
+  max-width: 90%;
+  box-sizing: border-box;
+}
+
+select {
+  background-color: #fff;
+  cursor: pointer;
+  appearance: none;
+}
+
+button {
+  background-color: #3b5998;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  border: none;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+button:hover {
+  background-color: #2d4373;
+  transform: scale(1.03);
+}
+
+/* === RESULTATFELT === */
+#result {
+  margin-top: 25px;
+  text-align: left;
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #fafafa;
+  min-height: 60px;
+  font-size: 1.15rem; /* 📏 større tekst i versene */
+  line-height: 1.8;
+}
+
+#result h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.3rem;
+}
+
+#result small {
+  color: #777;
+  font-size: 0.95rem;
+}
+
+/* === FOOTER === */
+footer {
+  margin-top: 40px;
+  padding: 15px;
+  font-size: 1rem;
+  color: #555;
+  background-color: #f0f0f0;
+  border-top: 1px solid #ddd;
+}
+
+/* === MOBILTILPASNING === */
+@media (max-width: 600px) {
+  body {
+    font-size: 17px;
+  }
+
+  header h1 {
+    font-size: 2rem;
+    padding: 10px 18px;
+  }
+
+  main {
+    margin: 25px auto;
+    padding: 22px;
+  }
+
+  select,
+  input,
+  button {
+    font-size: 1rem;
+    width: 100%;
+  }
+
+  #result {
+    font-size: 1.05rem;
+  }
+}
